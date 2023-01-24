@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
 
 var builder =
 	Microsoft.AspNetCore.Builder
@@ -9,33 +12,120 @@ var builder =
 builder.Services.AddRazorPages();
 
 // **************************************************
+// *** Solution (1) *********************************
+// **************************************************
+//System.IdentityModel.Tokens.Jwt
+//	.JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+//builder.Services.AddAuthentication(configureOptions: options =>
+//{
+//	options.DefaultScheme = "Cookies";
+//	options.DefaultChallengeScheme = "oidc";
+//})
+//	.AddCookie(authenticationScheme: "Cookies")
+
+//	.AddOpenIdConnect(authenticationScheme: "oidc", configureOptions: options =>
+//	{
+//		options.Authority =
+//			"https://localhost:5001";
+
+//		options.SaveTokens = true;
+//		options.ResponseType = "code";
+
+//		options.ClientId = "web1";
+//		options.ClientSecret = "WebSecret1";
+
+//		options.Scope.Clear();
+//		options.Scope.Add(item: "openid");
+//		options.Scope.Add(item: "profile");
+//	});
+// **************************************************
+
+// **************************************************
+// *** Solution (2) *********************************
+// **************************************************
+//System.IdentityModel.Tokens.Jwt
+//	.JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+//builder.Services.AddAuthentication(configureOptions: options =>
+//{
+//	options.DefaultScheme = "Cookies";
+//	options.DefaultChallengeScheme = "oidc";
+//})
+//	.AddCookie(authenticationScheme: "Cookies")
+
+//	.AddOpenIdConnect(authenticationScheme: "oidc", configureOptions: options =>
+//	{
+//		options.Authority =
+//			"https://localhost:5001";
+
+//		options.SaveTokens = true;
+//		options.ResponseType = "code";
+
+//		options.ClientId = "web1";
+//		options.ClientSecret = "WebSecret1";
+
+//		options.Scope.Clear();
+//		options.Scope.Add(item: "openid");
+//		options.Scope.Add(item: "profile");
+
+//		// New
+//		options.GetClaimsFromUserInfoEndpoint = true;
+//	});
+// **************************************************
+
+// **************************************************
+// *** Solution (3) *********************************
+// **************************************************
 System.IdentityModel.Tokens.Jwt
 	.JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-builder.Services.AddAuthentication(options =>
-{
-	options.DefaultScheme = "Cookies";
-	options.DefaultChallengeScheme = "oidc";
-})
+builder.Services
+	.AddAuthentication(configureOptions: options =>
+	{
+		options.DefaultScheme = "Cookies";
+		options.DefaultChallengeScheme = "oidc";
+	})
+
 	.AddCookie(authenticationScheme: "Cookies")
 
-	.AddOpenIdConnect(authenticationScheme: "oidc", options =>
+	.AddOpenIdConnect(authenticationScheme: "oidc", configureOptions: options =>
 	{
 		options.Authority =
 			"https://localhost:5001";
 
+		options.SaveTokens = true;
+		options.ResponseType = "code";
+
 		options.ClientId = "web1";
 		options.ClientSecret = "WebSecret1";
 
-		options.ResponseType = "code";
-
 		options.Scope.Clear();
-		options.Scope.Add("openid");
-		options.Scope.Add("profile");
+		options.Scope.Add(item: "openid");
+		options.Scope.Add(item: "profile");
 
-		options.SaveTokens = true;
-	});
+		// New
+		options.Scope.Add(item: "verification");
+
+		// New
+		options.ClaimActions.MapJsonKey
+			(claimType: "email_verified", jsonKey: "email_verified");
+
+		options.GetClaimsFromUserInfoEndpoint = true;
+	})
+	;
 // **************************************************
+
+
+
+
+
+
+
+
+
+
+
 
 //// New
 //builder.Services
@@ -62,8 +152,19 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// **************************************************
 //app.UseAuthorization();
 
-app.MapRazorPages();
+//app.MapRazorPages();
+// **************************************************
+
+// **************************************************
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRazorPages()
+	.RequireAuthorization()
+	;
+// **************************************************
 
 app.Run();

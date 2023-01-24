@@ -1,10 +1,49 @@
 ﻿@page
 @model IndexModel
-@{
-	ViewData["Title"] = "Home page";
-}
 
-<div class="text-center">
-	<h1 class="display-4">Welcome</h1>
-	<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@using Microsoft.AspNetCore.Authentication
+
+<h3>
+	Claims
+</h3>
+
+<dl>
+	@foreach (var claim in User.Claims)
+	{
+		<dt>@(claim.Type)</dt>
+		<dd>@(claim.Value)</dd>
+	}
+</dl>
+
+<hr />
+
+<h3>
+	Properties
+</h3>
+
+<dl>
+	@{
+		var authenticateResult =
+		await
+		HttpContext.AuthenticateAsync();
+
+		var properties =
+		authenticateResult.Properties;
+
+		if (properties == null)
+		{
+			return;
+		}
+
+		var items =
+		properties.Items;
+
+		foreach (var item in items)
+		{
+			<dt>@item.Key</dt>
+			<dd>@item.Value</dd>
+		}
+	}
+</dl>
+
+<hr />

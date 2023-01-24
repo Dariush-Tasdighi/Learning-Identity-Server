@@ -1,5 +1,7 @@
 ﻿using Duende.IdentityServer.Models;
 
+using IdentityModel;
+
 namespace Infrastructure;
 
 public static class Configuration : object
@@ -8,15 +10,45 @@ public static class Configuration : object
 	{
 	}
 
+	//public static System.Collections.Generic.IEnumerable
+	//	<Duende.IdentityServer.Models.IdentityResource> GetIdentityResources()
+	//{
+	//	var result =
+	//		new Duende.IdentityServer.Models.IdentityResource[]
+	//		{
+	//			new Duende.IdentityServer.Models.IdentityResources.OpenId(),
+	//			new Duende.IdentityServer.Models.IdentityResources.Profile(),
+	//		};
+
+	//	return result;
+	//}
+
 	public static System.Collections.Generic.IEnumerable
 		<Duende.IdentityServer.Models.IdentityResource> GetIdentityResources()
 	{
 		var result =
-			new Duende.IdentityServer.Models.IdentityResource[]
-			{
-				new Duende.IdentityServer.Models.IdentityResources.OpenId(),
-				new Duende.IdentityServer.Models.IdentityResources.Profile(),
-			};
+			new System.Collections.Generic.List
+			<Duende.IdentityServer.Models.IdentityResource>();
+
+		result.Add(item: new Duende.IdentityServer.Models.IdentityResources.OpenId());
+		result.Add(item: new Duende.IdentityServer.Models.IdentityResources.Profile());
+
+		System.Collections.Generic.IList<string> userClaims;
+		Duende.IdentityServer.Models.IdentityResource identityResource;
+
+		// **************************************************
+		userClaims =
+			new System.Collections.Generic.List<string>();
+
+		userClaims.Add(item: JwtClaimTypes.Email);
+		userClaims.Add(item: JwtClaimTypes.EmailVerified);
+
+		identityResource =
+			new Duende.IdentityServer.Models
+			.IdentityResource(name: "verification", userClaims: userClaims);
+
+		result.Add(item: identityResource);
+		// **************************************************
 
 		return result;
 	}
@@ -113,8 +145,15 @@ public static class Configuration : object
 				AllowedGrantTypes =
 					Duende.IdentityServer.Models.GrantTypes.Code,
 
+				//AllowedScopes =
+				//{
+				//	Duende.IdentityServer.IdentityServerConstants.StandardScopes.OpenId,
+				//	Duende.IdentityServer.IdentityServerConstants.StandardScopes.Profile
+				//},
+
 				AllowedScopes =
 				{
+					"verification",
 					Duende.IdentityServer.IdentityServerConstants.StandardScopes.OpenId,
 					Duende.IdentityServer.IdentityServerConstants.StandardScopes.Profile
 				},

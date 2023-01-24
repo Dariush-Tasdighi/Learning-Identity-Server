@@ -25,7 +25,7 @@ Run:
 
 The template "Duende IdentityServer Quickstart UI (UI assets only)" was created successfully.
 
-Copy Folders (Pages and wwwroot) to IdentityServer
+Copy Folders (Pages and wwwroot) to IdentityServer Project
 
 Note:
 
@@ -39,7 +39,7 @@ Enable the UI
 
 	Update All Files in Pages!!!
 
-		Namespace Problems!!!
+		Using Problems!!!
 **************************************************
 
 **************************************************
@@ -47,7 +47,7 @@ In [Properties] Folder:
 
 	Update File: launchSettings.json
 
-		"launchBrowser": true -> false
+		"launchBrowser": false -> true
 **************************************************
 
 **************************************************
@@ -55,7 +55,7 @@ In Folder: [Infrastructure]
 
 	Update File: HostingExtensions.cs
 
-		Uncomment Some Commands!
+		Uncomment Some Commands for activating Razor Pages
 **************************************************
 
 **************************************************
@@ -103,40 +103,42 @@ Register an OIDC client:
 
 		Update File: Configuration.cs
 
-			client =
-				new Duende.IdentityServer.Models.Client()
-				{
-					ClientId = "web1",
+			Add New Client (WEB)
 
-					ClientSecrets =
+				client =
+					new Duende.IdentityServer.Models.Client()
 					{
-						new Duende.IdentityServer.Models
-							.Secret(value: "WebSecret1".Sha256()),
-					},
+						ClientId = "web1",
 
-					ClientName =
-						"My Web (Razor Pages) (1)",
+						ClientSecrets =
+						{
+							new Duende.IdentityServer.Models
+								.Secret(value: "WebSecret1".Sha256()),
+						},
 
-					// Interactive user!
-					AllowedGrantTypes =
-						Duende.IdentityServer.Models.GrantTypes.Code,
+						ClientName =
+							"My Web (Razor Pages) (1)",
 
-					AllowedScopes =
-					{
-						Duende.IdentityServer.IdentityServerConstants.StandardScopes.OpenId,
-						Duende.IdentityServer.IdentityServerConstants.StandardScopes.Profile
-					},
+						// Interactive user!
+						AllowedGrantTypes =
+							Duende.IdentityServer.Models.GrantTypes.Code,
 
-					// Where to redirect to after login
-					RedirectUris =
-						{ "https://localhost:5002/signin-oidc" },
+						AllowedScopes =
+						{
+							Duende.IdentityServer.IdentityServerConstants.StandardScopes.OpenId,
+							Duende.IdentityServer.IdentityServerConstants.StandardScopes.Profile
+						},
 
-					// Where to redirect to after logout
-					PostLogoutRedirectUris =
-						{ "https://localhost:5002/signout-callback-oidc" },
-				};
+						// Where to redirect to after login
+						RedirectUris =
+							{ "https://localhost:5002/signin-oidc" },
 
-			result.Add(item: client);
+						// Where to redirect to after logout
+						PostLogoutRedirectUris =
+							{ "https://localhost:5002/signout-callback-oidc" },
+					};
+
+				result.Add(item: client);
 **************************************************
 
 **************************************************
@@ -146,7 +148,23 @@ Create the OIDC client:
 
 		RazorPages
 
-			Update PORT: 5002
+			In Folder: Properties
+
+				Update File: launchSettings.json (Update PORT: 5002)
+
+					{
+						"profiles": {
+							"https": {
+								"launchBrowser": true,
+								"commandName": "Project",
+								"dotnetRunMessages": true,
+								"applicationUrl": "https://localhost:5002",
+								"environmentVariables": {
+									"ASPNETCORE_ENVIRONMENT": "Development"
+								}
+							}
+						}
+					}
 **************************************************
 
 **************************************************
@@ -155,175 +173,67 @@ Install the OIDC NuGet Package in RazorPages Project:
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.2" />
 	</ItemGroup>
-**************************************************
 
-Update File: Program.cs
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-**************************************************
-Create Folder:
-
-	[Infrastructure]
-**************************************************
-
-**************************************************
-Move Files to [Infrastructure] Folder:
-
-	Config.cs
-	HostingExtensions.cs
-**************************************************
-
-**************************************************
-Fix All Files! DT Clean Code!
-**************************************************
-
-**************************************************
-Rename File:
-
-	Config.cs -> Configuration.cs
-
-Update File in [Infrastructure] Folder:
-
-	Configuration.cs
-**************************************************
-
-**************************************************
-Note: On first startup, IdentityServer will use its automatic key management
-feature to create a signing key and store it in the src/IdentityServer/keys
-directory. To avoid accidentally disclosing cryptographic secrets, the entire
-keys directory should be excluded from source control. It will be recreated if it is not present.
-**************************************************
-
-**************************************************
-Run the application and check the below address:
-
-	https://localhost:5001/.well-known/openid-configuration
-
-This is discovery document:
-
-	It is used by your clients and APIs to retrieve configuration
-	data needed to request and validate tokens, login and logout, etc.
-
-	https://docs.duendesoftware.com/identityserver/v6/reference/endpoints/discovery/
-**************************************************
-
-**************************************************
-Get Access Token from Postman:
-
-POST Verb:
-
-	https://localhost:5001/connect/token
-
-In Auth (Authorization) tab:
-
-	Type:
-
-		Basic Auth
-
-			Username: Client1
-			Password: ClientSecret1
-
-Body:
-
-	Select: x-www-form-urlencoded
-
-		Key: grant_type		Value: client_credentials
-		Key: scope			Value: MyApiScope1
-
-We get:
-
-{
-	"access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkVBMjhBMjNENkM3MDVDNUEzMEJEODk0OUFGMzZFMTZBIiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwibmJmIjoxNjc0NDE4NTc0LCJpYXQiOjE2NzQ0MTg1NzQsImV4cCI6MTY3NDQyMjE3NCwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMS9yZXNvdXJjZXMiLCJzY29wZSI6WyJNeUFwaVNjb3BlMSJdLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiRjgwQjM4QzZCREVBNDk2ODFEQTRBNzVDQTE2MTNDODgifQ.dt-zmJoYy2edptYFHiFjIqDPZE7OkM9UnXVu_mb96SofI5Px7Y7f53B6x1WXxszlj0N-yAO5rV0ZjqLTvOkDVt-VyRyiyZ_T3kT7KrTP2_y3z_3FHBDiz0v2x93jN8dKY1HvL3JIm42bDr7DfUQzWztEJ3YfUMcRUUyFN2JVwe3viHNM9ymY6niCUArjFdnUt9g6LMdxkI1b0A69MBAPK0PNyV3PXYiw0qSfq9OeRtX7Xpl2x9Afltuwsi8RO_ryloPCiUdQDpKIgFO0BZutjG1EQyVKT0SY5nzSuZ85HcvCCEoFhVMy0Ot8wbhPV1lg5dpkQveB1JBwYIYiKyveSA",
-	"expires_in": 3600,
-	"token_type": "Bearer",
-	"scope": "MyApiScope1"
-}
 Note:
 
-	"expires_in": 3600 -> 3600 Seconds = 60 Minutes = 1 Hour
-**************************************************
-
-**************************************************
-JWT = جات یا جوت
-
-Check JWT Access Token in Site:
-
-	https://jwt.io
-	https://JsonWebToken.io
-
-	https://jwt.ms
-	https://token.dev/
-	http://calebb.net/
-	https://www.jstoolset.com/jwt
-**************************************************
-
-
-
-
-
-
-
-
-**************************************************
-Create an API Project
-**************************************************
-
-**************************************************
-Add JWT Bearer Authentication
-
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
-
-This middleware will
-
-	Find and parse a JWT sent with incoming requests as an Authorization: Bearer header.
-	Validate the JWT’s signature to ensure that it was issued by IdentityServer.
-	Validate that the JWT is not expired.
+	AddAuthentication registers the authentication services.
+	Notice that in its options, the DefaultChallengeScheme is
+	set to “oidc”, and the DefaultScheme is set to “Cookies”.
+	The DefaultChallengeScheme is used when an unauthenticated
+	user must log in. This begins the OpenID Connect protocol,
+	redirecting the user to IdentityServer. After the user has
+	logged in and been redirected back to the client, the client
+	creates its own local cookie. Subsequent requests to the client
+	will include this cookie and be authenticated with the default Cookie scheme.
 **************************************************
 
 **************************************************
 Update File: Program.cs
 
-	builder.Services
-		.AddAuthentication(defaultScheme: "Bearer")
+	System.IdentityModel.Tokens.Jwt
+		.JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-		.AddJwtBearer(authenticationScheme: "Bearer", configureOptions: options =>
+	builder.Services.AddAuthentication(configureOptions: options =>
+	{
+		options.DefaultScheme = "Cookies";
+		options.DefaultChallengeScheme = "oidc";
+	})
+		.AddCookie(authenticationScheme: "Cookies")
+
+		.AddOpenIdConnect(authenticationScheme: "oidc", configureOptions: options =>
 		{
-			options.Authority = "https://localhost:5001";
+			options.Authority =
+				"https://localhost:5001";
 
-			options.TokenValidationParameters = new TokenValidationParameters
-			{
-				ValidateAudience = false,
-			};
+			options.SaveTokens = true;
+			options.ResponseType = "code";
+
+			options.ClientId = "web1";
+			options.ClientSecret = "WebSecret1";
+
+			options.Scope.Clear();
+			options.Scope.Add(item: "openid");
+			options.Scope.Add(item: "profile");
 		});
 
-Audience validation is disabled here because access to the api
-is modeled with [ApiScopes] only. By default, no audience will be
-emitted unless the api is modeled with [ApiResources] instead.
+Note:
+
+	Finally, AddOpenIdConnect is used to configure the handler
+	that performs the OpenID Connect protocol. The Authority
+	indicates where the trusted token service is located.
+	The ClientId and the ClientSecret identify this client.
+	The Scope is the collection of scopes that the client
+	will request. By default it includes the openid and
+	profile scopes, but clear the collection and add them
+	back for explicit clarity. SaveTokens is used to persist
+	the tokens in the cookie (as they will be needed later).
+
+Note:
+
+	This uses the authorization 'code' 'flow' with 'PKCE' to connect
+	to the OpenID Connect provider. See the below link for more information on protocol flows:
+
+	https://docs.duendesoftware.com/identityserver/v6/fundamentals/clients/
 **************************************************
 
 **************************************************
@@ -332,217 +242,226 @@ Update File: Program.cs
 	app.UseAuthentication();
 	app.UseAuthorization();
 
-	ترتیب نوشتن دستورات فوق اهمیت دارد
-
-[UseAuthentication] adds the authentication middleware to the pipeline
-so authentication will be performed automatically on every call into the host.
-
-[UseAuthorization] adds the authorization middleware to make sure your API
-endpoint cannot be accessed by anonymous clients.
-**************************************************
-
-**************************************************
-In Folder: [Controllers]
-
-	Create File: IdentityController.cs
-**************************************************
-
-**************************************************
-Test the controller
-
-Run the API project and then navigate to the identity controller
-at https://localhost:6001/identity in a browser. This should
-return a 401 status code, which means your API requires a credential
-and is now protected by IdentityServer.
-**************************************************
-
-**************************************************
-Test below action in PostMan:
-
-	https://localhost:6001/identity
-
-	401 Unauthorized
-**************************************************
-
-**************************************************
-Run both Projects:
-
-	Get "access_token" from Identity Server
-
-		POST Verb: https://localhost:5001/connect/token
-
-	Use "access_token" for runing IdentityController Action (Get):
-
-		GET Verb: https://localhost:6001/identity
-
-		In Auth (authorization) Tab:
-
-			Type
-
-				Bearer Token: [Access Token]
-**************************************************
-
-**************************************************
-Create the 'Client' project (Console Application)
-
-	The last step is to create a client that requests
-	an access token and then uses that token to access the API.
-**************************************************
-
-**************************************************
-Add the IdentityModel nuget package to 'Client' project
-
-	<ItemGroup>
-		<PackageReference Include="IdentityModel" Version="6.0.0" />
-	</ItemGroup>
-
-IdentityModel includes a client library to use with the
-discovery endpoint. This way you only need to know the
-base address of IdentityServer - the actual endpoint
-addresses can be read from the metadata.
-**************************************************
-
-**************************************************
-In 'Client' project:
-
-	- Update Program.cs:
-
-	var discoveryDocument =
-		await
-		client.GetDiscoveryDocumentAsync("https://localhost:5001");
-
-	- Run three projects:
-
-* Note: If you get an error connecting it may be that you are
-running https and the development certificate for localhost is not trusted.
-You can run:
-
-Run below command in PowerShell:
-
-	dotnet dev-certs https --trust
-
-* in order to trust the development certificate.
-This only needs to be done once.
-
-* Result:
-Trusting the HTTPS development certificate was requested.
-A confirmation prompt will be displayed if the certificate
-was not previously trusted. Click yes on the prompt to trust the certificate.
-Successfully trusted the existing HTTPS certificate.
-**************************************************
-
-**************************************************
-Request a token from IdentityServer
-
-Copy and paste the access token from the console
-to one of below sites to inspect the raw token:
-
-https://jwt.io
-https://jwt.ms
-**************************************************
-
-**************************************************
-Calling the API
-
-To send the access token to the API you typically
-use the HTTP Authorization header. This is done
-using the SetBearerToken extension method:
-**************************************************
-
-**************************************************
-Authorization at the API
-
-Right now, the API accepts any access token issued
-by your IdentityServer. In this section, you will add
-an Authorization Policy to the API that will check for
-the presence of the “MyApiScope1” scope in the access token.
-The protocol ensures that this scope will only be in
-the token if the client requests it and IdentityServer
-allows the client to have that scope.
-**************************************************
-
-**************************************************
-Solution (2):
-
-	In Project: Api
-
-		Update File: Program.cs
-
-			builder.Services.AddAuthorization(options =>
-			{
-				options.AddPolicy(name: "MyApiPolicy", configurePolicy: policy =>
-				{
-					policy.RequireAuthenticatedUser();
-
-					policy.RequireClaim
-						(claimType: "scope", allowedValues: "SomeAlakiName");
-				});
-			});
-
-			!!!AND!!!
-
-			app.MapControllers()
-				.RequireAuthorization(policyNames: "MyApiPolicy")
-				;
+	app.MapRazorPages()
+		.RequireAuthorization()
+		;
 
 Note:
 
-	You can now enforce this policy at various levels, e.g.:
-
-		globally
-		for all API endpoints
-		for specific controllers/actions
-
-Error:
-
-	InternalServerError
+	https://learn.microsoft.com/en-us/aspnet/core/security/authorization/razor-pages-authorization?view=aspnetcore-6.0	
 **************************************************
 
 **************************************************
-Solution (3):
+In Project: RazorPages
 
-	In Project: Api
+	In Folder: [Pages]
+
+		Create Page: Index
+**************************************************
+
+**************************************************
+In Project: RazorPages
+
+	Adding sign-out
+
+		To sign out, you need to
+
+			Clear local application cookies
+			Make a roundtrip to IdentityServer using the OIDC protocol to clear its session
+**************************************************
+
+**************************************************
+In Project: RazorPages
+
+	In Folder: Pages
+
+		Create Folder: Account
+
+		In Folder: Account
+
+			Create Page: Signout
+**************************************************
+
+**************************************************
+In Project: RazorPages
+
+	In Folder: Pages
+
+		In Folder: Shared
+
+			Update File: _Layout.cshtml
+
+				Add a 'Signout' link to layout 
+**************************************************
+
+**************************************************
+Getting claims from the UserInfo endpoint
+
+	In Project: RazorPages
 
 		Update File: Program.cs
 
-			!!!Change "SomeAlakiName"" to "MyApiScope1"
-
-			builder.Services.AddAuthorization(options =>
+			.AddOpenIdConnect(authenticationScheme: "oidc", configureOptions: options =>
 			{
-				options.AddPolicy(name: "MyApiPolicy", configurePolicy: policy =>
-				{
-					policy.RequireAuthenticatedUser();
+				...
 
-					policy.RequireClaim
-						(claimType: "scope", allowedValues: "MyApiScope1");
-				});
+				// New
+				options.GetClaimsFromUserInfoEndpoint = true;
 			});
 
-			!!!AND!!!
+			Note:
 
-			app.MapControllers()
-				.RequireAuthorization(policyNames: "MyApiPolicy")
-				;
-
-Error:
-
-	OK
+				You might have noticed that even though you’ve configured
+				the client to be allowed to retrieve the profile identity
+				scope, the claims associated with that scope (such as name,
+				family_name, website etc.) don’t appear in the returned token.
+				You need to tell the client to retrieve those claims from the
+				userinfo endpoint by specifying scopes that the client application
+				needs to access and setting the GetClaimsFromUserInfoEndpoint option
 **************************************************
 
 **************************************************
-Further experiments
+Further Experiments
 
-	This quickstart focused on the success path:
+	This quickstart created a client with interactive login using OIDC. To experiment further you can
 
-		The client was able to request a token.
-		The client could use the token to access the API.
+		Add additional claims to the identity
+		Add support for external authentication
+**************************************************
 
-	You can now try to provoke errors to learn how the system behaves, e.g.:
+**************************************************
+Add More Claims
 
-		Try to connect to IdentityServer when it is not running (unavailable).
-		Try to use an invalid client id or secret to request the token.
-		Try to ask for an invalid or null scope during the token request.
-		Try to call the API when it is not running (unavailable).
-		Don’t send the token to the API.
-		Configure the API to require a different scope than the one in the token.
+	To add more claims to the identity:
+
+		Add a new identity resource to the list in
+		src/IdentityServer/Config.cs. Name it and specify
+		which claims should be returned when it is requested.
+		The Name property of the resource is the scope value
+		that clients can request to get the associated UserClaims.
+		For example, you could add an IdentityResource named
+		“verification” which would include the email and email_verified claims.
+
+		In Project: IdentityServer
+
+			In Folder: [Infrastructure]
+
+				Update File: Configuration.cs
+
+		In Project: RazorPages
+
+			Update File: Program.cs
+
+Note:
+
+	IdentityServer uses the IProfileService to retrieve claims
+	for tokens and the userinfo endpoint. You can provide your
+	own implementation of IProfileService to customize this process
+	with custom logic, data access, etc. Since you are using AddTestUsers,
+	the TestUserProfileService is used automatically. It will automatically
+	include requested claims from the test users added in src/IdentityServer/TestUsers.cs.
+**************************************************
+
+**************************************************
+Add Support for External Authentication
+
+	Adding support for external authentication to your
+	IdentityServer can be done with very little code;
+	all that is needed is an authentication handler.
+
+	ASP.NET Core ships with handlers for Google, Facebook,
+	Twitter, Microsoft Account and OpenID Connect. In addition,
+	you can find handlers for many other authentication providers here:
+
+	https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers
+**************************************************
+
+**************************************************
+Add Google support
+
+	To use Google for authentication, you need to:
+
+		Add the 'Microsoft.AspNetCore.Authentication.Google' nuget package
+		to the IdentityServer project:
+
+			<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.2" />
+
+		Register with Google and set up a client.
+
+		Store the client id and secret securely with dotnet user-secrets.
+
+		Add the Google authentication handler to the middleware pipeline and configure it.
+
+	See Microsoft’s guide for details on how to register with Google,
+	create the client, and store the secrets in user-secrets.
+	Stop before adding the authentication middleware and Google
+	authentication handler to the pipeline.
+	You will need an IdentityServer specific option.
+
+	Add the following to ConfigureServices in src/IdentityServer/HostingExtensions.cs:
+
+		builder.Services.AddAuthentication()
+		.AddGoogle("Google", options =>
+		{
+			options.SignInScheme =
+				IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+			options.ClientId =
+				builder.Configuration["Authentication:Google:ClientId"];
+
+			options.ClientSecret =
+				builder.Configuration["Authentication:Google:ClientSecret"];
+		});
+
+	When authenticating with Google, there are again two authentication schemes.
+	AddGoogle adds the Google scheme, which handles the protocol flow back and
+	forth with Google. After successful login, the application needs to sign in
+	to an additional scheme that can authenticate future requests without needing
+	a round-trip to Google - typically by issuing a local cookie. The SignInScheme
+	tells the Google handler to use the scheme named
+	IdentityServerConstants.ExternalCookieAuthenticationScheme, which is a cookie
+	authentication handler automatically created by IdentityServer that is intended
+	for external logins.
+
+	Now run IdentityServer and WebClient and try to authenticate (you may need to
+	log out and log back in). You will see a Google button on the login page.
+
+	Click on Google and authenticate with a Google account. You should land back
+	on the WebClient home page, showing that the user is now coming from Google
+	with claims sourced from Google’s data.
+
+	Note:
+
+	The Google button is rendered by the login page automatically when there are
+	external providers registered as authentication schemes. See the BuildModelAsync
+	method in src/IdentityServer/Pages/Login/Index.cshtml.cs and the corresponding
+	Razor template for more details.
+**************************************************
+
+**************************************************
+Adding an additional OpenID Connect-based external provider
+
+	A cloud-hosted demo version of Duende IdentityServer can be added as an
+	additional external provider:
+
+	https://demo.duendesoftware.com/
+
+	Register and configure the services for the OpenId Connect handler
+	in src/IdentityServer/HostingExtensions.cs:
+
+
+**************************************************
+
+**************************************************
+	Now if you try to authenticate, you should see an additional button to log in
+	to the cloud-hosted Demo IdentityServer. If you click that button, you will be
+	redirected to https://demo.duendesoftware.com/. Note that the demo site is using
+	the same UI as your site, so there will not be very much that changes visually when
+	you’re redirected. Check that the page’s location has changed and then log in using
+	the alice or bob users (their passwords are their usernames, just as they are for the
+	local test users). You should land back at WebClient, authenticated with a demo user.
+
+	The demo users are logically distinct entities from the local test users, even though
+	they happen to have identical usernames. Inspect their claims in WebClient and note the
+	differences between them, such as the distinct sub claims.
 **************************************************
