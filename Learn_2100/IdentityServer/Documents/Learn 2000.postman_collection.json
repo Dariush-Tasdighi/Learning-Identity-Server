@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "3f084807-1133-44a5-b418-f4aa6c3bf9cb",
+		"name": "Learn 2000",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "173302"
+	},
+	"item": [
+		{
+			"name": "Get Access Token From Identity Server",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ClientSecret1",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "Client1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "MyApiScope1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:5001/connect/token",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Try request to API without Access Token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6001/identity",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"identity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Try request to API with Access Token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjYxRkE5ODcwMTI1QjNBOENDODAxREZDNEZDNDU4QjY5IiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwibmJmIjoxNjc0NDIyNjUxLCJpYXQiOjE2NzQ0MjI2NTEsImV4cCI6MTY3NDQyNjI1MSwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMS9yZXNvdXJjZXMiLCJzY29wZSI6WyJNeUFwaVNjb3BlMSJdLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiREU4RTI5NTc2QzE2ODdFQzQ1OThFQjZFQTAzREVDRTUifQ.fZfBYKAjdP7ohxzZXNULEMvSGXhb2hNDMFONVcUQnRmMDTKpEoD42wqak-kE01KuvPJYSn8_btGntbd9SgBUQHR-EbRSMPQCdaUG2ddFD9ZYFU9O41V11AuYxH4S-3It0X-xFxe5P2izutL-8vXMIVAWOr3emPrM87BslNdpdQwmWN2U6Nj82m30M8kezh_kmA0YDqgL_TDuZiwW8gTaoN-MpZJwElm1_dRZyHXFiLzKlYinZsRkrIm5qoAtxcLYcCZkXgbsdpgpN_9ob3AtgJQ0u4pqAQ0J4Xv3W2aEQ5YOi9vFwW696IshPvgEi5xNRID8OmRz3Vj4zd6E8kCIPA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:6001/identity",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "6001",
+					"path": [
+						"identity"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
