@@ -97,6 +97,7 @@ internal static class HostingExtensions : object
 		}
 
 		app.UseStaticFiles();
+
 		app.UseRouting();
 
 		app.UseIdentityServer();
