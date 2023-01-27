@@ -1,9 +1,10 @@
 using Serilog;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Duende.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Duende.IdentityServer.EntityFramework.Mappers;
 
 namespace Infrastructure;
 
@@ -13,8 +14,8 @@ internal static class HostingExtensions : object
 	{
 	}
 
-	public static WebApplication
-		ConfigureServices(this WebApplicationBuilder builder)
+	public static Microsoft.AspNetCore.Builder.WebApplication
+		ConfigureServices(this Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
 	{
 		builder.Services.AddRazorPages();
 
@@ -87,8 +88,8 @@ internal static class HostingExtensions : object
 			.AddGoogle
 				(authenticationScheme: "Google", configureOptions: options =>
 				{
-					options.SignInScheme =
-						IdentityServerConstants.ExternalCookieAuthenticationScheme;
+					options.SignInScheme = Duende.IdentityServer
+						.IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
 					options.ClientId =
 						builder.Configuration["Authentication:Google:ClientId"]
@@ -132,8 +133,8 @@ internal static class HostingExtensions : object
 		return builder.Build();
 	}
 
-	public static WebApplication
-		ConfigurePipeline(this WebApplication app)
+	public static Microsoft.AspNetCore.Builder.WebApplication
+		ConfigurePipeline(this Microsoft.AspNetCore.Builder.WebApplication app)
 	{
 		app.UseSerilogRequestLogging();
 
@@ -141,6 +142,8 @@ internal static class HostingExtensions : object
 		{
 			app.UseDeveloperExceptionPage();
 		}
+
+		InitializeDatabase(app: app);
 
 		app.UseStaticFiles();
 
@@ -155,5 +158,64 @@ internal static class HostingExtensions : object
 			;
 
 		return app;
+	}
+
+	private static void InitializeDatabase
+		(Microsoft.AspNetCore.Builder.IApplicationBuilder app)
+	{
+		var service =
+			app.ApplicationServices.GetService
+			<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+
+		if (service == null)
+		{
+			return;
+		}
+
+		using var serviceScope = service.CreateScope();
+
+		serviceScope.ServiceProvider.GetRequiredService
+			<Duende.IdentityServer.EntityFramework.DbContexts.PersistedGrantDbContext>()
+			.Database
+			.Migrate();
+
+		var context =
+			serviceScope.ServiceProvider.GetRequiredService
+			<Duende.IdentityServer.EntityFramework.DbContexts.ConfigurationDbContext>();
+
+		context.Database.Migrate();
+
+		if (context.Clients.Any() == false)
+		{
+			foreach (var client in Configuration.GetClients())
+			{
+				context.Clients
+					.Add(client.ToEntity());
+			}
+
+			context.SaveChanges();
+		}
+
+		if (context.IdentityResources.Any() == false)
+		{
+			foreach (var resource in Configuration.GetIdentityResources())
+			{
+				context.IdentityResources
+					.Add(resource.ToEntity());
+			}
+
+			context.SaveChanges();
+		}
+
+		if (context.ApiScopes.Any() == false)
+		{
+			foreach (var resource in Configuration.GetApiScopes())
+			{
+				context.ApiScopes
+					.Add(resource.ToEntity());
+			}
+
+			context.SaveChanges();
+		}
 	}
 }

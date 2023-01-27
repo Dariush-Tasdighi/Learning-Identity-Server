@@ -230,3 +230,112 @@ You should now see a src/IdentityServer/Data/Migrations/IdentityServer
 directory in your project containing the code for your newly created migrations.
 **************************************************
 
+**************************************************
+Initializing the Database
+
+	Now that you have the migrations, you can write code to create the
+	database from them and seed the database with the same configuration
+	data used in the previous quickstarts.
+
+	Note:
+
+		The approach used in this quickstart is used to make it easy to
+		get IdentityServer up and running. You should devise your own database
+		creation and maintenance strategy that is appropriate for your architecture.
+
+	In src/IdentityServer/HostingExtensions.cs, add this method to
+	initialize the database:
+
+		private static void InitializeDatabase
+			(Microsoft.AspNetCore.Builder.IApplicationBuilder app)
+		{
+			var service =
+				app.ApplicationServices.GetService
+				<Microsoft.Extensions.DependencyInjection.IServiceScopeFactory>();
+
+			if (service == null)
+			{
+				return;
+			}
+
+			using var serviceScope = service.CreateScope();
+
+			serviceScope.ServiceProvider.GetRequiredService
+				<Duende.IdentityServer.EntityFramework.DbContexts.PersistedGrantDbContext>()
+				.Database
+				.Migrate();
+
+			var context =
+				serviceScope.ServiceProvider.GetRequiredService
+				<Duende.IdentityServer.EntityFramework.DbContexts.ConfigurationDbContext>();
+
+			context.Database.Migrate();
+
+			if (context.Clients.Any() == false)
+			{
+				foreach (var client in Configuration.GetClients())
+				{
+					context.Clients
+						.Add(client.ToEntity());
+				}
+
+				context.SaveChanges();
+			}
+
+			if (context.IdentityResources.Any() == false)
+			{
+				foreach (var resource in Configuration.GetIdentityResources())
+				{
+					context.IdentityResources
+						.Add(resource.ToEntity());
+				}
+
+				context.SaveChanges();
+			}
+
+			if (context.ApiScopes.Any() == false)
+			{
+				foreach (var resource in Configuration.GetApiScopes())
+				{
+					context.ApiScopes
+						.Add(resource.ToEntity());
+				}
+
+				context.SaveChanges();
+			}
+		}
+
+	Call InitializeDatabase from the ConfigurePipeline method:
+
+		public static WebApplication ConfigurePipeline(this WebApplication app)
+		{ 
+			app.UseSerilogRequestLogging();
+
+			if (app.Environment.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+
+			InitializeDatabase(app);
+
+			//...
+		}
+
+	Note:
+
+		The InitializeDatabase method is convenient way to seed the database,
+		but this approach is not ideal to leave in to execute each time the
+		application runs. Once your database is populated, consider removing
+		the call to the API.
+
+	Now if you run the IdentityServer project, the database should be created
+	and seeded with the quickstart configuration data. You should be able to
+	use a tool like SQL Lite Studio to connect and inspect the data.
+**************************************************
+
+**************************************************
+Run the client applications
+
+You should now be able to run any of the existing client applications and
+sign-in, get tokens, and call the API – all based upon the database configuration.
+**************************************************
