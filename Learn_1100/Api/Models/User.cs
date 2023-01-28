@@ -2,7 +2,7 @@
 
 public class User : object
 {
-	public User(string username, string password)
+	public User(string username, string password) : base()
 	{
 		Username = username;
 		Password = password;

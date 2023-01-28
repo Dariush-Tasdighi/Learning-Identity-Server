@@ -20,19 +20,19 @@ public static class Utility : object
 		return result;
 	}
 
-	private static byte[] HashPassword
-		(string password, byte[] saltPasswordBytes)
+	public static string GetSha256(string text)
 	{
-		using var hmac =
-			new System.Security.Cryptography
-			.HMACSHA512(key: saltPasswordBytes);
+		var inputBytes = System.Text
+			.Encoding.UTF8.GetBytes(s: text);
 
-		var passwordBytes =
-			System.Text.Encoding
-			.UTF8.GetBytes(s: password);
+		using var sha = System.Security
+			.Cryptography.SHA256.Create();
 
-		var result =
-			hmac.ComputeHash(buffer: passwordBytes);
+		var outputBytes =
+			sha.ComputeHash(buffer: inputBytes);
+
+		var result = System.Convert
+			.ToBase64String(inArray: outputBytes);
 
 		return result;
 	}
@@ -44,9 +44,16 @@ public static class Utility : object
 			System.Text.Encoding
 			.UTF8.GetBytes(s: saltPassword);
 
+		using var hmac =
+			new System.Security.Cryptography
+			.HMACSHA512(key: saltPasswordBytes);
+
+		var passwordBytes =
+			System.Text.Encoding
+			.UTF8.GetBytes(s: password);
+
 		var passwordHashBytes =
-			HashPassword(password: password,
-			saltPasswordBytes: saltPasswordBytes);
+			hmac.ComputeHash(buffer: passwordBytes);
 
 		var result =
 			System.Text.Encoding.UTF8

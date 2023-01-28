@@ -1,18 +1,22 @@
 ﻿**************************************************
-In Models Folder:
+In Folder: Models
 
 	Create File: User.cs
 	Update File: DatabaseContext.cs
+
+		public Microsoft.EntityFrameworkCore.DbSet<User> Users { get; set; }
 **************************************************
 
 **************************************************
-In Controllers Folder:
+In Folder: Controllers
 
 	Create File: UsersController.cs based on CustomersController.cs
 
 		Replace All: customer to user (Match Case)
 		Replace All: Customer to User (Match Case)
 		Replace All: Customers to Users (Match Case)
+
+		Update Method: UpdateCustomerAsync
 **************************************************
 
 **************************************************

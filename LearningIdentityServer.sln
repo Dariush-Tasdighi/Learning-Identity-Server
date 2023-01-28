@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "Learn_240
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorPages", "Learn_2400\RazorPages\RazorPages.csproj", "{C62AE330-5521-493D-9044-724B949D4E73}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Learn 3000 - ASP.NET Core Identity", "Learn 3000 - ASP.NET Core Identity", "{C2D2116F-3666-435A-A9A1-A87A92D7B56D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
