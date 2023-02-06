@@ -45,6 +45,7 @@ Update File:
 		builder.Services
 			.AddAuthentication(defaultScheme: Microsoft.AspNetCore
 				.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+
 			.AddJwtBearer(options =>
 			{
 				options.TokenValidationParameters = tokenValidationParameters;
@@ -64,41 +65,29 @@ Update File:
 **************************************************
 *** Step (6) *************************************
 **************************************************
-Update File:
-
-	Program.cs
-
-		builder.Services
-			.AddAuthentication(defaultScheme: Microsoft.AspNetCore
-				.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-
-			.AddJwtBearer(options =>
-			{
-				options.TokenValidationParameters = tokenValidationParameters;
-			})
-			;
-**************************************************
-
-**************************************************
-*** Step (7) *************************************
-**************************************************
 Test Application with Postman
+
+	Register (POST)
 
 	Login (POST)
 
-	Get Access Token
+	Get Access Token (JWT)
 
-	Create Customer with Access Token
+	Create Customer without Access Token (JWT)
+
+		Error: 401
+
+	Create Customer with Access Token (JWT)
 
 		Authorization Tab
 
 			Type
 
-				Bearer Tokne
+				Bearer Token
 **************************************************
 
 **************************************************
-*** Step (8) *************************************
+*** Step (7) *************************************
 **************************************************
 Activate Swagger Authentication
 
@@ -121,7 +110,7 @@ Note: In TextBox we should write!!!
 **************************************************
 
 **************************************************
-*** Step (9) *************************************
+*** Step (8) *************************************
 **************************************************
 In Folder: Controllers
 
@@ -138,15 +127,15 @@ In Folder: Controllers
 **************************************************
 
 **************************************************
-*** Step (10) ************************************
+*** Step (9) *************************************
 **************************************************
 حال اقدام به حذف یک مشتری می‌کنیم و با خطای ذیل مواجه می‌شویم
 
-	Error: response status is 403
+	Error: response status is 403 (Forbidden) (Access Denied)
 **************************************************
 
 **************************************************
-*** Step (11) ************************************
+*** Step (10) ************************************
 **************************************************
 In Folder: Infrastructure
 
@@ -158,8 +147,7 @@ In Folder: Infrastructure
 **************************************************
 
 **************************************************
-*** Step (12) ************************************
+*** Step (11) ************************************
 **************************************************
-حال اقدام به حذف یک مشتری می‌کنیم و با خطای ذیل مواجه می‌شویم
-
+حال اقدام به حذف یک مشتری می‌کنیم
 **************************************************

@@ -73,6 +73,9 @@ public static class Utility : object
 
 				new System.Security.Claims.Claim
 					(type: System.Security.Claims.ClaimTypes.Name, user.Username),
+
+				//new System.Security.Claims.Claim
+				//	(type: System.Security.Claims.ClaimTypes.Email, user.EmailAddress),
 			};
 
 		var accessTokenSecurityKeyBytes =
@@ -83,7 +86,8 @@ public static class Utility : object
 			.SymmetricSecurityKey(key: accessTokenSecurityKeyBytes);
 
 		var algorithm =
-			Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha512Signature;
+			Microsoft.IdentityModel.Tokens
+			.SecurityAlgorithms.HmacSha512Signature;
 
 		var signingCredentials =
 			new Microsoft.IdentityModel.Tokens

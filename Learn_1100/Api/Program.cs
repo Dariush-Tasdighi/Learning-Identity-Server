@@ -10,14 +10,19 @@ var builder =
 builder.Services
 	.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+	.AddEndpointsApiExplorer();
 
-builder.Services.AddDbContext<Models.DatabaseContext>(options =>
-{
-	options.UseInMemoryDatabase
-		(databaseName: "MyInMemoryDatabase");
-});
+builder.Services
+	.AddSwaggerGen();
+
+builder.Services
+	.AddDbContext<Models.DatabaseContext>
+	(optionsAction: options =>
+	{
+		options.UseInMemoryDatabase
+			(databaseName: "MyInMemoryDatabase");
+	});
 
 var app =
 	builder.Build();

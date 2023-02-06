@@ -170,8 +170,10 @@ public class AccountController :
 			new Models.User
 			(username: dto.Username, password: passwordHash)
 			{
-				IsActive = true,
 				IsAdmin = false,
+
+				// دارد Business Rule بستگی به
+				IsActive = true,
 			};
 
 		await DatabaseContext
@@ -264,7 +266,9 @@ public class AccountController :
 				.StatusCodes.Status403Forbidden, value: errorMessage);
 		}
 
-		return Ok(value: "Valid Token!");
+		// **************************************************
+		//return Ok(value: "Valid Token!");
+		// **************************************************
 
 		// **************************************************
 		var accessTokenSecurityKey =

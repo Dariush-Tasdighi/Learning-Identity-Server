@@ -10,11 +10,12 @@ var builder =
 builder.Services
 	.AddControllers();
 
-builder.Services.AddDbContext<Models.DatabaseContext>(options =>
-{
-	options.UseInMemoryDatabase
-		(databaseName: "MyInMemoryDatabase");
-});
+builder.Services.AddDbContext<Models.DatabaseContext>
+	(optionsAction: options =>
+	{
+		options.UseInMemoryDatabase
+			(databaseName: "MyInMemoryDatabase");
+	});
 
 // **************************************************
 // *** Step(4) * ************************************
